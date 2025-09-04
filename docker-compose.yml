@@ -33,6 +33,23 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
 
+  mysql:
+    image: mysql:8.1
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASS}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   product-service:
     build:
       context: ./product-service
@@ -57,7 +74,19 @@ services:
       - rabbitmq
       - consul
 
+  inventory-service:
+    build:
+      context: ./inventory-service
+    container_name: inventory-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+      - rabbitmq
+      - consul
+
 volumes:
   consul_data:
   rabbitmq_data:
   mongodb_data:
+  mysql_data:

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
 import org.example.productservice.service.ProductService;
-import org.springframework.data.mongodb.repository.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

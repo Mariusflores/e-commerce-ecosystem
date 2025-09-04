@@ -6,7 +6,7 @@
         <groupId>org.example</groupId>
         <artifactId>e-commerce-ecosystem</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath>../pom.xml</relativePath>   <!-- lookup parent from repository -->
     </parent>
     <artifactId>inventory-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>

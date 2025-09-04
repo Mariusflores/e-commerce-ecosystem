@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +23,10 @@ public class ProductService {
     public String createProduct(ProductRequest request){
         Product product = Product.builder()
                 .name(request.getName())
+                .skuCode(generateSku(request))
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .category(request.getCategory())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         Product savedProduct = repository.save(product);
@@ -66,7 +66,6 @@ public class ProductService {
             product.setCategory(request.getCategory());
         }
 
-        product.setUpdatedAt(LocalDateTime.now());
 
         repository.save(product);
         log.info("Product {} updated", product.getId());
@@ -76,9 +75,14 @@ public class ProductService {
         Product product = repository.findById(id).get();
         repository.delete(product);
     }
+
+    /*
+    * Helpers
+    * */
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
+                .skuCode(product.getSkuCode())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
@@ -87,5 +91,15 @@ public class ProductService {
                 .updatedAt(product.getUpdatedAt())
                 .build();
     }
+
+    public String generateSku(ProductRequest request) {
+        String categoryCode = request.getCategory().substring(0, 3).toUpperCase();
+        String shortName = request.getName().substring(0, 2).toUpperCase();
+        String timePart = String.valueOf(System.currentTimeMillis()).substring(7);
+        return categoryCode + "-" + shortName + "-" + timePart;
+    }
+
+
+
 
 }

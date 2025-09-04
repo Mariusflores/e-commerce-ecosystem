@@ -13,7 +13,7 @@ spring:
         enabled: false
 
     consul:
-      host: localhost
+      host: consul
       port: 8500
       enabled: true
       discovery:
@@ -29,8 +29,8 @@ spring:
       server:
         webflux:
           routes:
-            - id: product
-              uri: lb://product
+            - id: product-service
+              uri: lb://product-service
               predicates:
                 - Path=/api/product/**
 

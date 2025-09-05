@@ -11,13 +11,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ProductEventPublisher {
 
+    // Inject Rabbit Template
     private final RabbitTemplate rabbitTemplate;
 
 
     private static final String EXCHANGE_NAME = "product-exchange";
 
 
-    //Send method
+    /**
+     * Use Rabbit Template to send an event to 'product-exchange' with given routing key
+     * */
     public void publishProductEvent(ProductEvent event, String routingKey) {
         rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, event);
         log.info("event {} has been published", event);

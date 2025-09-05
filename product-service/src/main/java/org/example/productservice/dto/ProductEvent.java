@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.domain.datatype.Action;
 
-
+/**
+ * Data Transfer Object for RabbitMQ Event transferring
+ * */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

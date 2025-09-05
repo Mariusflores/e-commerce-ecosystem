@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * Document for MongoDB
+ * */
 @Document(value = "Products")
 @AllArgsConstructor
 @NoArgsConstructor

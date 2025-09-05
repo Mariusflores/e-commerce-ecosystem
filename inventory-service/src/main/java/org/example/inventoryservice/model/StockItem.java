@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity for Inventory database
+ * */
 @Entity
 @Table(name = "t_inventory")
 @Data

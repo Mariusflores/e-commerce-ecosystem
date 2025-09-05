@@ -15,6 +15,10 @@ public class InventoryEventListener {
 
     private final InventoryService inventoryService;
 
+    /**
+     * Listens to the 'inventory-queue' for inventory events
+     * and delegates them to InventoryService for handling.
+     * */
     @RabbitListener(queues = "inventory-queue")
     public void handleInventoryEvent(@Payload InventoryEvent event){
         log.info("Received Inventory Event: {}", event);

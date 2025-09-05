@@ -1,3 +1,5 @@
+# Product Service Dockerfile
+
 # Use official Java 21 JDK image
 FROM eclipse-temurin:21-jdk-jammy
 

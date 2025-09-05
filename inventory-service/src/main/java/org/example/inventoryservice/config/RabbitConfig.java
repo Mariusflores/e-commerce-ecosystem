@@ -17,7 +17,7 @@ public class RabbitConfig {
     private static final String QUEUE_NAME = "inventory-queue";
 
     /**
-     * Declare the Exchange
+     * Declare a TopicExchange named product-exchange
      * */
     @Bean
     public TopicExchange productExchange() {
@@ -25,7 +25,7 @@ public class RabbitConfig {
     }
 
     /**
-     * Declare the queue
+     * Declare a durable queue
      * */
     @Bean
     public Queue inventoryQueue() {
@@ -33,17 +33,23 @@ public class RabbitConfig {
     }
 
     /**
-     * Bind Exchange to inventory-queue with routing keys
+     * Bind the inventory queue to 'product-exchange' with routing key 'product.created'
      * */
     @Bean
     public Binding bindingCreate(Queue inventoryQueue, TopicExchange productExchange) {
         return BindingBuilder.bind(inventoryQueue).to(productExchange).with(CREATE_ROUTING_KEY);
     }
+    /**
+     * Bind the inventory queue to 'product-exchange' with routing key 'product.deleted'
+     * */
     @Bean
     public Binding bindingDelete(Queue inventoryQueue, TopicExchange productExchange) {
         return BindingBuilder.bind(inventoryQueue).to(productExchange).with(DELETE_ROUTING_KEY);
     }
 
+    /**
+     * JSON converter for RabbitMQ messages
+     * */
     @Bean
     public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {
         return new Jackson2JsonMessageConverter();

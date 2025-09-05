@@ -12,22 +12,36 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     private static final String EXCHANGE_NAME = "product-exchange";
-    private static final String ROUTING_KEY = "product.created";
+    private static final String CREATE_ROUTING_KEY = "product.created";
+    private static final String DELETE_ROUTING_KEY = "product.deleted";
     private static final String QUEUE_NAME = "inventory-queue";
 
+    /**
+     * Declare the Exchange
+     * */
     @Bean
     public TopicExchange productExchange() {
         return new TopicExchange(EXCHANGE_NAME);
     }
 
+    /**
+     * Declare the queue
+     * */
     @Bean
     public Queue inventoryQueue() {
         return new Queue(QUEUE_NAME, true);
     }
 
+    /**
+     * Bind Exchange to inventory-queue with routing keys
+     * */
     @Bean
-    public Binding binding(Queue inventoryQueue, TopicExchange productExchange) {
-        return BindingBuilder.bind(inventoryQueue).to(productExchange).with(ROUTING_KEY);
+    public Binding bindingCreate(Queue inventoryQueue, TopicExchange productExchange) {
+        return BindingBuilder.bind(inventoryQueue).to(productExchange).with(CREATE_ROUTING_KEY);
+    }
+    @Bean
+    public Binding bindingDelete(Queue inventoryQueue, TopicExchange productExchange) {
+        return BindingBuilder.bind(inventoryQueue).to(productExchange).with(DELETE_ROUTING_KEY);
     }
 
     @Bean

@@ -15,11 +15,11 @@ public class ProductEventPublisher {
 
 
     private static final String EXCHANGE_NAME = "product-exchange";
-    private static final String ROUTING_KEY = "product.created";
+
 
     //Send method
-    public void publishProductEvent(ProductEvent event){
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, ROUTING_KEY, event);
+    public void publishProductEvent(ProductEvent event, String routingKey) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, event);
         log.info("event {} has been published", event);
     }
 }

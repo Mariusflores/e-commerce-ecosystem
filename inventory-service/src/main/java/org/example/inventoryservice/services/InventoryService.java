@@ -6,9 +6,12 @@ import org.example.inventoryservice.InventoryRepository;
 import org.example.inventoryservice.dto.InventoryEvent;
 import org.example.inventoryservice.dto.StockItemRequest;
 import org.example.inventoryservice.dto.StockItemResponse;
+import org.example.inventoryservice.error.ItemNotFoundException;
 import org.example.inventoryservice.error.OutOfStockException;
 import org.example.inventoryservice.model.StockItem;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,23 +31,23 @@ public class InventoryService {
 
 
     public StockItemResponse getItemBySkuCode(String skuCode) {
-        StockItem item = inventoryRepository.findBySkuCode(skuCode);
+        StockItem verifyItem = verifyItemExists(skuCode);
 
         return  StockItemResponse.builder()
-                .skuCode(item.getSkuCode())
-                .quantity(item.getQuantity())
+                .skuCode(verifyItem.getSkuCode())
+                .quantity(verifyItem.getQuantity())
                 .build();
     }
 
     //API context (for controller)
     public int reduceInventoryItem(String skuCode) {
-        StockItem item = inventoryRepository.findBySkuCode(skuCode);
+        StockItem verifiedItem = verifyItemExists(skuCode);
 
-        if(item.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
+        if(verifiedItem.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
 
-        item.setQuantity(item.getQuantity() - 1);
+        verifiedItem.setQuantity(verifiedItem.getQuantity() - 1);
 
-        StockItem savedItem = inventoryRepository.save(item);
+        StockItem savedItem = inventoryRepository.save(verifiedItem);
 
         return savedItem.getQuantity();
     }
@@ -57,8 +60,16 @@ public class InventoryService {
             case CREATE -> handleCreateInventoryEvent(event.getSkuCode(), event.getQuantity());
             case ADD -> handleAddInventoryEvent(event.getSkuCode(), event.getQuantity());
             case REDUCE -> handleReduceInventoryEvent(event.getSkuCode(), event.getQuantity());
+            case DELETE -> handleDeleteInventoryEvent(event.getSkuCode());
             default -> throw new IllegalArgumentException("Unknown action: " + event.getAction());
         }
+    }
+
+    private void handleDeleteInventoryEvent(String skuCode) {
+        StockItem verifiedItem = verifyItemExists(skuCode);
+
+        inventoryRepository.delete(verifiedItem);
+        log.info("item {} has been deleted", verifiedItem);
     }
 
     private void handleCreateInventoryEvent(String skuCode, int quantity) {
@@ -73,26 +84,31 @@ public class InventoryService {
     }
 
     public void handleReduceInventoryEvent(String skuCode, int quantity) {
-        StockItem item = inventoryRepository.findBySkuCode(skuCode);
+        StockItem verifiedItem = verifyItemExists(skuCode);
 
-        if(item.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
+        if(verifiedItem.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
 
-        item.setQuantity(item.getQuantity() - quantity);
+        verifiedItem.setQuantity(verifiedItem.getQuantity() - quantity);
 
-        StockItem savedItem = inventoryRepository.save(item);
+        StockItem savedItem = inventoryRepository.save(verifiedItem);
 
         log.info("Item {} has been reduced to {}", savedItem.getSkuCode(), quantity);
     }
 
     public void handleAddInventoryEvent(String skuCode, int quantity) {
-        StockItem item = inventoryRepository.findBySkuCode(skuCode);
+        StockItem verifiedItem = verifyItemExists(skuCode);
 
-        if(item.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
+        if(verifiedItem.getQuantity() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
 
-        item.setQuantity(item.getQuantity() + quantity);
+        verifiedItem.setQuantity(verifiedItem.getQuantity() + quantity);
 
-        StockItem savedItem = inventoryRepository.save(item);
+        StockItem savedItem = inventoryRepository.save(verifiedItem);
 
         log.info("Item {} has been added to {}", savedItem.getSkuCode(), quantity);
+    }
+
+    private StockItem verifyItemExists(String skuCode) {
+    return Optional.ofNullable(inventoryRepository.findBySkuCode(skuCode))
+            .orElseThrow(() -> new ItemNotFoundException(skuCode));
     }
 }

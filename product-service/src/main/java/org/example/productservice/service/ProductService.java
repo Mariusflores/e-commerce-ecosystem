@@ -2,7 +2,7 @@ package org.example.productservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.common.datatype.Action;
+import org.example.domain.datatype.Action;
 import org.example.productservice.dto.ProductEvent;
 import org.example.productservice.messaging.ProductEventPublisher;
 import org.example.productservice.dto.ProductRequest;
@@ -41,7 +41,7 @@ public class ProductService {
                 .action(Action.CREATE)
                 .build();
 
-        eventPublisher.publishProductEvent(event);
+        eventPublisher.publishProductEvent(event, "product.created");
 
         return savedProduct.getId();
     }
@@ -86,6 +86,16 @@ public class ProductService {
         Product product = repository.findById(id).
                 orElseThrow(() -> new RuntimeException("Product with id: " + id +" not found"));
         repository.delete(product);
+
+        log.info("Product {} deleted", id);
+
+        ProductEvent event = ProductEvent.builder()
+                .skuCode(product.getSkuCode())
+                .quantity(0)
+                .action(Action.DELETE)
+                .build();
+
+        eventPublisher.publishProductEvent(event, "product.deleted");
     }
 
     /*

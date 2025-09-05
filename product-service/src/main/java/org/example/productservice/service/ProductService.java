@@ -2,13 +2,15 @@ package org.example.productservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.datatype.Action;
+import org.example.productservice.dto.ProductEvent;
+import org.example.productservice.messaging.ProductEventPublisher;
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
 import org.example.productservice.model.Product;
 import org.example.productservice.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,26 +20,35 @@ import java.util.Objects;
 public class ProductService {
 
     private final ProductRepository repository;
+    private final ProductEventPublisher eventPublisher;
 
     public String createProduct(ProductRequest request){
         Product product = Product.builder()
                 .name(request.getName())
+                .skuCode(generateSku(request))
                 .description(request.getDescription())
                 .price(request.getPrice())
                 .category(request.getCategory())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         Product savedProduct = repository.save(product);
 
         log.info("Product {} created", product.getId());
 
+        ProductEvent event = ProductEvent.builder()
+                .skuCode(savedProduct.getSkuCode())
+                .quantity(10)
+                .action(Action.CREATE)
+                .build();
+
+        eventPublisher.publishProductEvent(event);
+
         return savedProduct.getId();
     }
 
     public ProductResponse getProductById(String id){
-        Product product = repository.findById(id).get();
+        Product product = repository.findById(id).
+                orElseThrow(() -> new RuntimeException("Product with id: " + id +" not found"));
         return mapToProductResponse(product);
     }
 
@@ -66,19 +77,24 @@ public class ProductService {
             product.setCategory(request.getCategory());
         }
 
-        product.setUpdatedAt(LocalDateTime.now());
 
         repository.save(product);
         log.info("Product {} updated", product.getId());
     }
 
     public void deleteProductById(String id){
-        Product product = repository.findById(id).get();
+        Product product = repository.findById(id).
+                orElseThrow(() -> new RuntimeException("Product with id: " + id +" not found"));
         repository.delete(product);
     }
+
+    /*
+    * Helpers
+    * */
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
+                .skuCode(product.getSkuCode())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
@@ -87,5 +103,15 @@ public class ProductService {
                 .updatedAt(product.getUpdatedAt())
                 .build();
     }
+
+    public String generateSku(ProductRequest request) {
+        String categoryCode = request.getCategory().substring(0, 3).toUpperCase();
+        String shortName = request.getName().substring(0, 2).toUpperCase();
+        String timePart = String.valueOf(System.currentTimeMillis()).substring(7);
+        return categoryCode + "-" + shortName + "-" + timePart;
+    }
+
+
+
 
 }

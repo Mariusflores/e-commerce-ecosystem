@@ -37,14 +37,16 @@ services:
     image: mysql:8.1
     container_name: mysql
     environment:
-      MYSQL_DATABASE: ${MYSQL_DB}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASS}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
     ports:
       - "3306:3306"
+    env_file:
+      - .env
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./scripts/init.sh:/docker-entrypoint-initdb.d/init.sh
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASS}"]
       interval: 10s

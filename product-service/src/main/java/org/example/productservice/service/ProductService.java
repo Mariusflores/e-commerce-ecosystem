@@ -2,6 +2,9 @@ package org.example.productservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.common.datatype.Action;
+import org.example.productservice.dto.ProductEvent;
+import org.example.productservice.messaging.ProductEventPublisher;
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
 import org.example.productservice.model.Product;
@@ -17,6 +20,7 @@ import java.util.Objects;
 public class ProductService {
 
     private final ProductRepository repository;
+    private final ProductEventPublisher eventPublisher;
 
     public String createProduct(ProductRequest request){
         Product product = Product.builder()
@@ -30,6 +34,14 @@ public class ProductService {
         Product savedProduct = repository.save(product);
 
         log.info("Product {} created", product.getId());
+
+        ProductEvent event = ProductEvent.builder()
+                .skuCode(savedProduct.getSkuCode())
+                .quantity(10)
+                .action(Action.CREATE)
+                .build();
+
+        eventPublisher.publishProductEvent(event);
 
         return savedProduct.getId();
     }

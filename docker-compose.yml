@@ -93,6 +93,22 @@ services:
       consul:
         condition: service_started
 
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    ports:
+      - "8083:8083"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      consul:
+        condition: service_started
+
 volumes:
   consul_data:
   rabbitmq_data:

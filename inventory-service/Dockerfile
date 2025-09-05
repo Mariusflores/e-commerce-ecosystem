@@ -10,7 +10,7 @@ WORKDIR /app
 COPY target/inventory-service-*.jar ./inventory-service.jar
 
 # Expose the port your service uses
-EXPOSE 8081
+EXPOSE 8082
 
 # Run the Spring Boot JAR
 ENTRYPOINT ["java", "-jar", "inventory-service.jar"]

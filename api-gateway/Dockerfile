@@ -10,7 +10,7 @@ WORKDIR /app
 COPY target/api-gateway-*.jar ./api-gateway.jar
 
 # Expose the port your service uses
-EXPOSE 8081
+EXPOSE 8080
 
 # Run the Spring Boot JAR
 ENTRYPOINT ["java", "-jar", "api-gateway.jar"]

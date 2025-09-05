@@ -47,7 +47,8 @@ public class ProductService {
     }
 
     public ProductResponse getProductById(String id){
-        Product product = repository.findById(id).get();
+        Product product = repository.findById(id).
+                orElseThrow(() -> new RuntimeException("Product with id: " + id +" not found"));
         return mapToProductResponse(product);
     }
 
@@ -82,7 +83,8 @@ public class ProductService {
     }
 
     public void deleteProductById(String id){
-        Product product = repository.findById(id).get();
+        Product product = repository.findById(id).
+                orElseThrow(() -> new RuntimeException("Product with id: " + id +" not found"));
         repository.delete(product);
     }
 

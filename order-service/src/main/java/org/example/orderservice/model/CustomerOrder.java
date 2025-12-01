@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.domain.datatype.OrderStatus;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,15 +26,30 @@ public class CustomerOrder {
     private Long id;
 
     @Column(nullable = false, updatable = false)
-    private String CustomerId = UUID.randomUUID().toString();
+    private String customerId;
+
+    @Column(unique = true, nullable = false)
+    private String orderNumber = UUID.randomUUID().toString();
 
     @CreatedDate
     private LocalDateTime orderDate;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus = OrderStatus.CREATED;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> item = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderItem> items = new ArrayList<>();
 
+
+    public void addItem(OrderItem item) {
+        items.add(item);
+        item.setOrder(this);
+    }
+
+
+    public BigDecimal getTotal(){
+        return items.stream()
+                .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

@@ -2,13 +2,13 @@ package org.example.inventoryservice.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.inventoryservice.InventoryRepository;
-import org.example.inventoryservice.dto.InventoryEvent;
+import org.example.domain.dto.ProductAddedEvent;
 import org.example.inventoryservice.dto.StockItemRequest;
 import org.example.inventoryservice.dto.StockItemResponse;
 import org.example.inventoryservice.error.ItemNotFoundException;
 import org.example.inventoryservice.error.OutOfStockException;
 import org.example.inventoryservice.model.StockItem;
+import org.example.inventoryservice.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -54,7 +54,7 @@ public class InventoryService {
 
     //Event context (for EventListener
 
-    public void handleInventoryEvent(InventoryEvent event){
+    public void handleInventoryEvent(ProductAddedEvent event){
 
         switch(event.getAction()){
             case CREATE -> handleCreateInventoryEvent(event.getSkuCode(), event.getQuantity());

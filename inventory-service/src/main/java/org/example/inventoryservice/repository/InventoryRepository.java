@@ -1,4 +1,4 @@
-package org.example.inventoryservice;
+package org.example.inventoryservice.repository;
 
 import org.example.inventoryservice.model.StockItem;
 import org.springframework.data.jpa.repository.JpaRepository;

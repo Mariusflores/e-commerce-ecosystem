@@ -2,7 +2,7 @@ package org.example.productservice.messaging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.domain.dto.ProductAddedEvent;
+import org.example.domain.dto.events.ProductAddedEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 

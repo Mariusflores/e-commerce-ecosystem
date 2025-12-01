@@ -19,14 +19,13 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String productName;
     private String skuCode;
-
     private Integer quantity;
-
     private BigDecimal price;
-
+    private String category;
     @ManyToOne
     @JoinColumn(name = "order_id")
     private CustomerOrder order;
+
 }

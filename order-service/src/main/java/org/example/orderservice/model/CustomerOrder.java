@@ -40,6 +40,10 @@ public class CustomerOrder {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> items = new ArrayList<>();
 
+    private String paymentMethod;
+
+    private String shippingAddress;
+
 
     public void addItem(OrderItem item) {
         items.add(item);

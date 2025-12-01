@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.orderservice.dto.OrderRequest;
 import org.example.orderservice.dto.OrderResponse;
 import org.example.orderservice.service.OrderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public void createOrder(@RequestBody OrderRequest order){
         orderService.createOrder(order);
     }
@@ -30,7 +32,8 @@ public class OrderController {
     }
 
     @DeleteMapping("/{orderNumber")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteOrder(@PathVariable String orderNumber){
-
+        orderService.deleteOrder(orderNumber);
     }
 }

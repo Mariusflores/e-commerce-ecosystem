@@ -2,7 +2,8 @@ package org.example.orderservice.messaging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.domain.dto.OrderStatusChangedEvent;
+import org.example.domain.dto.events.OrderPlacedEvent;
+import org.example.domain.dto.events.OrderStatusChangedEvent;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +15,26 @@ public class OrderEventPublisher {
 
     private final static String EXCHANGE_NAME = "order_exchange";
 
-    /**
-     * Use Rabbit Template to send an event to 'product-exchange' with given routing key
-     * */
-    public void publishStatusCodeEvent(OrderStatusChangedEvent event, String routingKey) {
-        rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, event);
-        log.info("event {} has been published", event);
+    // Define Routing keys as constants
+    public static final String ORDER_STATUS_UPDATED = "order.status.updated";
+
+
+    public void publishStatusUpdateEvent(OrderStatusChangedEvent event){
+        publishEvent(event, ORDER_STATUS_UPDATED);
     }
+
+    public void publishOrderPlacedEvent(OrderPlacedEvent event){
+
+    }
+    /**
+     * Generic Publish Event method
+     * */
+    public void publishEvent(Object event, String routingKey) {
+        rabbitTemplate.convertAndSend(EXCHANGE_NAME, routingKey, event);
+        log.info("event {} has been published to exchange {} with routing key {}",
+                event.getClass().getSimpleName(), EXCHANGE_NAME, routingKey);
+    }
+
+
+
 }

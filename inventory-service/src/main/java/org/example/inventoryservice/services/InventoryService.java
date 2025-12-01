@@ -2,7 +2,9 @@ package org.example.inventoryservice.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.domain.dto.ProductAddedEvent;
+import org.example.domain.dto.ProductInfo;
+import org.example.domain.dto.events.ProductAddedEvent;
+import org.example.inventoryservice.client.ProductClient;
 import org.example.inventoryservice.dto.StockItemRequest;
 import org.example.inventoryservice.dto.StockItemResponse;
 import org.example.inventoryservice.error.ItemNotFoundException;
@@ -11,6 +13,7 @@ import org.example.inventoryservice.model.StockItem;
 import org.example.inventoryservice.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +21,7 @@ import java.util.Optional;
 @Slf4j
 public class InventoryService {
 
+    private final ProductClient productClient;
     private final InventoryRepository inventoryRepository;
 
 
@@ -110,5 +114,15 @@ public class InventoryService {
     private StockItem verifyItemExists(String skuCode) {
     return Optional.ofNullable(inventoryRepository.findBySkuCode(skuCode))
             .orElseThrow(() -> new ItemNotFoundException(skuCode));
+    }
+
+    public List<ProductInfo> getItemsBySkuCode(List<String> skuCodes) {
+        List<ProductInfo> items = productClient.getItemsBySkuCodes(skuCodes);
+
+        for (ProductInfo productInfo : items){
+            StockItem item =  inventoryRepository.findBySkuCode(productInfo.getSkuCode());
+            productInfo.setQuantity(item.getQuantity());
+        }
+        return items;
     }
 }

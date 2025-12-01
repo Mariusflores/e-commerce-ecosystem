@@ -3,7 +3,8 @@ package org.example.productservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.datatype.Action;
-import org.example.domain.dto.ProductAddedEvent;
+import org.example.domain.dto.ProductInfo;
+import org.example.domain.dto.events.ProductAddedEvent;
 import org.example.productservice.exception.ProductNotFoundException;
 import org.example.productservice.messaging.ProductEventPublisher;
 import org.example.productservice.dto.ProductRequest;
@@ -136,16 +137,40 @@ public class ProductService {
     }
 
     /**
-     * Generates a SKU code for product based on its category, name, and current timestamp
+     * Generates a unique SKU code for product based on its category, name, and UUID
+     * Format: CAT-NAME-UNIQUE (e.g., ELE-LA-A3F9)
      * */
     public String generateSku(ProductRequest request) {
-        String categoryCode = request.getCategory().substring(0, 3).toUpperCase();
-        String shortName = request.getName().substring(0, 2).toUpperCase();
-        String timePart = String.valueOf(System.currentTimeMillis()).substring(7);
-        return categoryCode + "-" + shortName + "-" + timePart;
+        String categoryCode = request.getCategory().substring(0, Math.min(3, request.getCategory().length())).toUpperCase();
+        String shortName = request.getName().substring(0, Math.min(2, request.getName().length())).toUpperCase();
+
+        // Use UUID last 4 chars instead of timestamp for better uniqueness
+        String uniquePart = java.util.UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+
+        String skuCode = categoryCode + "-" + shortName + "-" + uniquePart;
+
+        // Ensure uniqueness (check if SKU already exists)
+        while (repository.existsBySkuCode(skuCode)) {
+            uniquePart = java.util.UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+            skuCode = categoryCode + "-" + shortName + "-" + uniquePart;
+        }
+
+        return skuCode;
     }
 
 
+    public List<ProductInfo> getProductsBySkuCodes(List<String> skuCodes) {
+        List<Product> products = repository.findBySkuCodeIn( skuCodes );
 
+        return products.stream().map(this::mapToProductInfo).toList();
+    }
 
+    private ProductInfo mapToProductInfo(Product product) {
+        return ProductInfo.builder()
+                .skuCode(product.getSkuCode())
+                .name(product.getName())
+                .price(product.getPrice())
+                .price(product.getPrice())
+                .build();
+    }
 }

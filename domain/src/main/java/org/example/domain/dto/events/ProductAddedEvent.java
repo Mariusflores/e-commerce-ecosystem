@@ -1,4 +1,4 @@
-package org.example.domain.dto;
+package org.example.domain.dto.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

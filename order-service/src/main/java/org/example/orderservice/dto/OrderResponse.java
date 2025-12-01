@@ -21,6 +21,7 @@ public class OrderResponse {
     LocalDateTime orderDate;
     OrderStatus orderStatus;
     BigDecimal total;
+    private String shippingAddress;
 
 
 }

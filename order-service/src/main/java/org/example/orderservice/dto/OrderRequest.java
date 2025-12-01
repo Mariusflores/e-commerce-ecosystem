@@ -15,7 +15,9 @@ import java.util.List;
 public class OrderRequest {
 
     private String customerId;
-    private List<OrderItem> items;
+    private String paymentMethod;
+    private String shippingAddress;
+    private List<OrderItemRequest> items;
 
 
 }

@@ -1,5 +1,6 @@
 package org.example.inventoryservice.services;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.dto.ProductInfo;
@@ -117,7 +118,17 @@ public class InventoryService {
     }
 
     public List<ProductInfo> getItemsBySkuCode(List<String> skuCodes) {
-        List<ProductInfo> items = productClient.getItemsBySkuCodes(skuCodes);
+
+        List<ProductInfo> items;
+        try{
+             items = productClient.getItemsBySkuCodes(skuCodes);
+        }catch (FeignException.NotFound e){
+            log.error("items not found");
+            throw new ItemNotFoundException("items not found");
+        }catch (FeignException e){
+            log.error("Trouble communicating with the product service");
+            throw new ItemNotFoundException("items not found");
+        }
 
         for (ProductInfo productInfo : items){
             StockItem item =  inventoryRepository.findBySkuCode(productInfo.getSkuCode());

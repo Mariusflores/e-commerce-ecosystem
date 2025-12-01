@@ -31,7 +31,7 @@ public class OrderController {
         return orderService.fetchByCustomerId(customerId);
     }
 
-    @DeleteMapping("/{orderNumber")
+    @DeleteMapping("/{orderNumber}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteOrder(@PathVariable String orderNumber){
         orderService.deleteOrder(orderNumber);

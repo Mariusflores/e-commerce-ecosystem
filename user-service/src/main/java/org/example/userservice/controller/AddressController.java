@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.userservice.dto.AddressRequest;
 import org.example.userservice.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,13 +16,21 @@ public class AddressController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void updateAddress(@PathVariable Long id, @RequestBody AddressRequest addressRequest){
+    public void updateAddress(@PathVariable Long id,
+                              Authentication authentication,
+                              @RequestBody AddressRequest addressRequest){
+
+        String email = authentication.getName();
+
+        userService.updateAddress(id, email, addressRequest);
 
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAddress(@PathVariable Long id){
+    public void deleteAddress(@PathVariable Long id, Authentication authentication){
 
+        String email = authentication.getName();
+        userService.deleteAddress(id, email);
     }
 }

@@ -8,6 +8,7 @@ import org.example.userservice.dto.UserRequest;
 import org.example.userservice.models.Address;
 import org.example.userservice.services.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,34 +21,43 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
-    public UserProfileResponse getUserProfileById(@PathVariable Long id){
-        return null;
+    public UserProfileResponse getUserProfile(Authentication authentication) {
+        String email = authentication.getName();
+        return userService.getUserProfileByEmail(email);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
-    public void updateUserProfile(@PathVariable Long id, @RequestBody UserRequest userRequest){
+    public void updateUserProfile(Authentication authentication, @RequestBody UserRequest userRequest){
+        String email = authentication.getName();
+
+        userService.updateUserProfile(email, userRequest);
+    }
+
+    @DeleteMapping("/profile")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteUserProfile(Authentication authentication){
+        String email = authentication.getName();
+        userService.deleteUserProfile(email);
 
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/profile/addresses")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUserProfile(@PathVariable Long id){
+    public List<Address> getAddresses(Authentication authentication){
+        String email = authentication.getName();
 
+        return userService.getAddresses(email);
     }
 
-    @GetMapping("/{id}/addresses")
+    @PostMapping("/profile/addresses")
     @ResponseStatus(HttpStatus.OK)
-    public List<Address> getAddresses(@PathVariable Long id){
-        return null;
-    }
+    public void addAddress(Authentication authentication, @RequestBody AddressRequest addressRequest){
+        String email = authentication.getName();
 
-    @PostMapping("/{id}/addresses")
-    @ResponseStatus(HttpStatus.OK)
-    public void addAddress(@PathVariable Long id, @RequestBody AddressRequest addressRequest){
-
+        userService.addAddress(email, addressRequest);
     }
 
 }

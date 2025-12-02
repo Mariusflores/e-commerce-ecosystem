@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.domain.datatype.OrderStatus;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class CustomerOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +30,14 @@ public class CustomerOrder {
     @Column(nullable = false, updatable = false)
     private String customerId;
 
+    @Builder.Default
     @Column(unique = true, nullable = false)
     private String orderNumber = UUID.randomUUID().toString();
 
     @CreatedDate
     private LocalDateTime orderDate;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.CREATED;
 
@@ -44,11 +48,6 @@ public class CustomerOrder {
 
     private String shippingAddress;
 
-
-    public void addItem(OrderItem item) {
-        items.add(item);
-        item.setOrder(this);
-    }
 
 
     public BigDecimal getTotal(){

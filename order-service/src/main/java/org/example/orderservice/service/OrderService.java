@@ -95,11 +95,11 @@ public class OrderService {
                 .customerId(request.getCustomerId())
                 .paymentMethod(request.getPaymentMethod())
                 .shippingAddress(request.getShippingAddress())
+                .items(orderItems)
                 .build();
 
-        for (OrderItem item: orderItems) {
-            order.addItem(item);
-        }
+        orderItems.forEach(item -> item.setOrder(order));
+
         CustomerOrder savedOrder = orderRepository.save(order);
         log.info("Saved Order for customer: {}", savedOrder.getCustomerId());
 
@@ -147,6 +147,7 @@ public class OrderService {
                 .id(customerOrder.getId())
                 .orderNumber(customerOrder.getOrderNumber())
                 .customerId(customerOrder.getCustomerId())
+                .shippingAddress(customerOrder.getShippingAddress())
                 .orderDate(customerOrder.getOrderDate())
                 .orderStatus(customerOrder.getOrderStatus())
                 .total(customerOrder.getTotal())

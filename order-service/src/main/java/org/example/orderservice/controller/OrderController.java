@@ -3,6 +3,7 @@ package org.example.orderservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.orderservice.dto.OrderRequest;
 import org.example.orderservice.dto.OrderResponse;
+import org.example.orderservice.model.CustomerOrder;
 import org.example.orderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createOrder(@RequestBody OrderRequest order){
-        orderService.createOrder(order);
+    public String createOrder(@RequestBody OrderRequest order){
+        return orderService.createOrder(order);
     }
 
     @GetMapping("/{orderNumber}")

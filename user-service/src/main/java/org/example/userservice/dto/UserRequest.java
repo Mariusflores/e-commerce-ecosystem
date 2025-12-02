@@ -4,10 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.userservice.models.Address;
-import org.example.userservice.models.Role;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

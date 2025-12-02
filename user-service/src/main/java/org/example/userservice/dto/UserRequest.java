@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.userservice.models.Address;
+import org.example.userservice.models.Role;
 
 import java.util.List;
 
@@ -18,6 +19,4 @@ public class UserRequest {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private List<Address> addresses;
-    private String role;
 }

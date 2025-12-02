@@ -1,5 +1,6 @@
 package org.example.userservice.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userservice.dto.LoginRequest;
@@ -8,9 +9,13 @@ import org.example.userservice.models.Role;
 import org.example.userservice.models.User;
 import org.example.userservice.repository.UserRepository;
 import org.example.userservice.util.JwtUtil;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,37 +23,55 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl detailsService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
 
-    public void registerUser(UserRequest userRequest){
+    @Transactional
+    public String registerUser(UserRequest userRequest){
 
-        User user = User.builder()
-                .email(userRequest.getEmail())
-                .password(hashPassword(userRequest.getPassword()))
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .phoneNumber(userRequest.getPhoneNumber())
-                .role(Role.toRole(userRequest.getRole()))
-                .addresses(userRequest.getAddresses())
-                .build();
-        log.info("registering user...");
-        userRepository.save(user);
-        log.info("User with email {} has been registered successfully", user.getEmail());
+        if(userRequest.getEmail() == null || userRequest.getPassword() == null){
+            throw new IllegalArgumentException("Email or password is null");
+        }
+
+        String hashedPassword = hashPassword(userRequest.getPassword());
+
+        if(!userExists(userRequest.getEmail())){
+            User user = User.builder()
+                    .email(userRequest.getEmail())
+                    .password(hashedPassword)
+                    .firstName(userRequest.getFirstName())
+                    .lastName(userRequest.getLastName())
+                    .phoneNumber(userRequest.getPhoneNumber())
+                    .role(Role.USER)
+                    .build();
+            log.info("registering user...");
+            userRepository.save(user);
+            log.info("User with email {} has been registered successfully", user.getEmail());
+        }else{
+            throw new IllegalArgumentException("User already exists");
+        }
+        return jwtUtil.generateToken(userRequest.getEmail());
+    }
+
+    private boolean userExists(String email) {
+
+
+        return userRepository.existsByEmail(email);
     }
 
     public String login(LoginRequest loginRequest){
-        UserDetails userDetails = userDetailsService.loadUserByEmail(loginRequest.getEmail());
+        UserDetails userDetails = detailsService.loadUserByUsername(loginRequest.getEmail());
 
-        if(userDetails == null){return null;}
+
 
         if(authenticate(loginRequest.getPassword(), userDetails.getPassword())){
             return jwtUtil.generateToken(userDetails.getUsername());
 
+        }else {
+            throw new BadCredentialsException("Wrong email or password");
         }
-        return null;
     }
 
     public boolean authenticate(String rawPassword, String storedHash){

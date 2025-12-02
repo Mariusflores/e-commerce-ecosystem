@@ -1,15 +1,45 @@
 # Order service Dockerfile
 
-# Use official Java 21 JDK image
-FROM eclipse-temurin:21-jdk-jammy
+# Stage 1: Build
+FROM eclipse-temurin:21-jdk-jammy AS build
+WORKDIR /workspace
 
-# Set working directory inside container
+# Copy parent pom
+COPY pom.xml ./pom.xml
+
+# Copy Maven wrapper
+COPY .mvn ./.mvn
+COPY mvnw ./mvnw
+
+# Copy all module poms (Maven needs to see module structure)
+COPY domain/pom.xml ./domain/pom.xml
+COPY api-gateway/pom.xml ./api-gateway/pom.xml
+COPY product-service/pom.xml ./product-service/pom.xml
+COPY order-service/pom.xml ./order-service/pom.xml
+COPY inventory-service/pom.xml ./inventory-service/pom.xml
+
+# Copy domain source and build it
+COPY domain/src ./domain/src
+RUN ./mvnw clean install -pl domain -am -DskipTests
+
+# Download dependencies for order-service (cached layer)
+WORKDIR /workspace/order-service
+RUN ../mvnw dependency:go-offline -B
+
+# Copy source code
+COPY order-service/src ./src
+
+# Build the application
+RUN ../mvnw clean package -DskipTests
+
+# Stage 2: Runtime
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copy the JAR into the container
-COPY target/order-service-*.jar ./order-service.jar
+# Copy the JAR from build stage
+COPY --from=build /workspace/order-service/target/order-service-*.jar ./order-service.jar
 
-# Expose the port your service uses
+# Expose the port
 EXPOSE 8083
 
 # Run the Spring Boot JAR

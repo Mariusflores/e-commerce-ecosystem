@@ -5,46 +5,64 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfig {
 
-    private static final String EXCHANGE_NAME = "product-exchange";
+    private static final String PRODUCT_EXCHANGE_NAME = "product-exchange";
+    private static final String ORDER_EXCHANGE_NAME = "order-exchange";
     private static final String CREATE_ROUTING_KEY = "product.created";
     private static final String DELETE_ROUTING_KEY = "product.deleted";
-    private static final String QUEUE_NAME = "inventory-queue";
+    private static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
+    private static final String PRODUCT_QUEUE_NAME = "product-queue";
+    private static final String ORDER_QUEUE_NAME = "order-queue";
+
 
     /**
      * Declare a TopicExchange named product-exchange
      * */
     @Bean
     public TopicExchange productExchange() {
-        return new TopicExchange(EXCHANGE_NAME);
+        return new TopicExchange(PRODUCT_EXCHANGE_NAME);
+    }
+
+
+    @Bean
+    public TopicExchange orderExchange() {return new TopicExchange(ORDER_EXCHANGE_NAME);}
+
+    /**
+     * Declare a durable queues
+     * */
+    @Bean
+    public Queue productQueue() {
+        return new Queue(PRODUCT_QUEUE_NAME, true);
+    }
+
+    @Bean
+    public Queue orderQueue() {return new Queue(ORDER_QUEUE_NAME, true);}
+
+    /**
+     * Bind the product-queue to 'product-exchange' with routing keys
+     * */
+    @Bean
+    public Binding bindingCreate(Queue productQueue, TopicExchange productExchange) {
+        return BindingBuilder.bind(productQueue).to(productExchange).with(CREATE_ROUTING_KEY);
+    }
+    
+    @Bean
+    public Binding bindingDelete(Queue productQueue, TopicExchange productExchange) {
+        return BindingBuilder.bind(productQueue).to(productExchange).with(DELETE_ROUTING_KEY);
     }
 
     /**
-     * Declare a durable queue
+     * Bind the order-queue to 'order-exchange' with routing key 'order.placed'
      * */
     @Bean
-    public Queue inventoryQueue() {
-        return new Queue(QUEUE_NAME, true);
-    }
-
-    /**
-     * Bind the inventory queue to 'product-exchange' with routing key 'product.created'
-     * */
-    @Bean
-    public Binding bindingCreate(Queue inventoryQueue, TopicExchange productExchange) {
-        return BindingBuilder.bind(inventoryQueue).to(productExchange).with(CREATE_ROUTING_KEY);
-    }
-    /**
-     * Bind the inventory queue to 'product-exchange' with routing key 'product.deleted'
-     * */
-    @Bean
-    public Binding bindingDelete(Queue inventoryQueue, TopicExchange productExchange) {
-        return BindingBuilder.bind(inventoryQueue).to(productExchange).with(DELETE_ROUTING_KEY);
+    public Binding bindingOrder(Queue orderQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(orderQueue).to(orderExchange).with(ORDER_PLACED_ROUTING_KEY);
     }
 
     /**

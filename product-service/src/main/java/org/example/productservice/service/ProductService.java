@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.datatype.Action;
 import org.example.domain.dto.ProductInfo;
-import org.example.domain.dto.events.ProductAddedEvent;
+import org.example.domain.dto.events.InventoryEvent;
 import org.example.productservice.exception.ProductNotFoundException;
 import org.example.productservice.messaging.ProductEventPublisher;
 import org.example.productservice.dto.ProductRequest;
@@ -42,14 +42,14 @@ public class ProductService {
 
         log.info("Product {} created", product.getId());
 
-        ProductAddedEvent event = ProductAddedEvent.builder()
+        InventoryEvent event = InventoryEvent.builder()
                 .skuCode(savedProduct.getSkuCode())
                 .quantity(10)
                 .action(Action.CREATE)
                 .build();
 
-        eventPublisher.publishProductEvent(event, "product.created");
 
+        eventPublisher.publishProductEvent(event, "product.created");
         return savedProduct.getId();
     }
 
@@ -111,7 +111,7 @@ public class ProductService {
 
         log.info("Product {} deleted", id);
 
-        ProductAddedEvent event = ProductAddedEvent.builder()
+        InventoryEvent event = InventoryEvent.builder()
                 .skuCode(product.getSkuCode())
                 .quantity(0)
                 .action(Action.DELETE)

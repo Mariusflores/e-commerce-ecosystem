@@ -13,10 +13,11 @@ import org.springframework.stereotype.Component;
 public class OrderEventPublisher {
     private final RabbitTemplate rabbitTemplate;
 
-    private final static String EXCHANGE_NAME = "order_exchange";
+    private final static String EXCHANGE_NAME = "order-exchange";
 
     // Define Routing keys as constants
     public static final String ORDER_STATUS_UPDATED = "order.status.updated";
+    public static final String ORDER_PLACED = "order.placed";
 
 
     public void publishStatusUpdateEvent(OrderStatusChangedEvent event){
@@ -24,7 +25,7 @@ public class OrderEventPublisher {
     }
 
     public void publishOrderPlacedEvent(OrderPlacedEvent event){
-
+        publishEvent(event, ORDER_PLACED);
     }
     /**
      * Generic Publish Event method

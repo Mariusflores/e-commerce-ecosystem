@@ -67,7 +67,7 @@ public class OrderService {
 
 
             if(product == null){
-                throw new RuntimeException("Product not found" + itemRequest.getSkuCode());
+                throw new RuntimeException("Product not found: " + itemRequest.getSkuCode());
             }
 
             //validate stock availability
@@ -79,9 +79,9 @@ public class OrderService {
 
             // Build order item
             OrderItem orderItem = OrderItem.builder()
-                    .skuCode(product.getSkuCode())
+                    .skuCode(itemRequest.getSkuCode())
                     .productName(product.getName())
-                    .quantity(product.getQuantity())
+                    .quantity(itemRequest.getQuantity())
                     .price(product.getPrice())
                     .category(product.getCategory())
                     .build();

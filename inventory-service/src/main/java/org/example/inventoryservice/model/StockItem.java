@@ -24,5 +24,5 @@ public class StockItem {
     @NotNull
     @Column(unique = true)
     private String skuCode;
-    private int quantity;
+    private int availableStock;
 }

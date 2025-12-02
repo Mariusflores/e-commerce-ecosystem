@@ -13,7 +13,7 @@ import org.example.domain.datatype.Action;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProductAddedEvent {
+public class InventoryEvent {
     String skuCode;
     int quantity;
     Action action;

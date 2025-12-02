@@ -1,4 +1,4 @@
-# API gateway Dockerfile
+# User service Dockerfile
 
 # Stage 1: Build
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -23,12 +23,12 @@ COPY user-service/pom.xml ./user-service/pom.xml
 COPY domain/src ./domain/src
 RUN ./mvnw clean install -pl domain -am -DskipTests
 
-# Download dependencies for api-gateway (cached layer)
-WORKDIR /workspace/api-gateway
+# Download dependencies for user-service (cached layer)
+WORKDIR /workspace/user-service
 RUN ../mvnw dependency:go-offline -B
 
 # Copy source code
-COPY api-gateway/src ./src
+COPY user-service/src ./src
 
 # Build the application
 RUN ../mvnw clean package -DskipTests
@@ -38,10 +38,10 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy the JAR from build stage
-COPY --from=build /workspace/api-gateway/target/api-gateway-*.jar ./api-gateway.jar
+COPY --from=build /workspace/user-service/target/user-service-*.jar ./user-service.jar
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 8084
 
 # Run the Spring Boot JAR
-ENTRYPOINT ["java", "-jar", "api-gateway.jar"]
+ENTRYPOINT ["java", "-jar", "user-service.jar"]

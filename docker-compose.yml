@@ -113,6 +113,23 @@ services:
       consul:
         condition: service_started
 
+  user-service:
+    build:
+      context: .
+      dockerfile: ./user-service/Dockerfile
+    container_name: user-service
+    ports:
+      - "8084:8084"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      consul:
+        condition: service_started
+
 volumes:
   consul_data:
   rabbitmq_data:

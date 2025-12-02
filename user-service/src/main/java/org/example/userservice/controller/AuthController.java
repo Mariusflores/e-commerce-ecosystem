@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userservice.dto.LoginRequest;
 import org.example.userservice.dto.UserRequest;
-import org.example.userservice.models.User;
 import org.example.userservice.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

@@ -20,6 +20,7 @@ public class OrderEventPublisher {
     public static final String ORDER_PLACED = "order.placed";
 
 
+
     public void publishStatusUpdateEvent(OrderStatusChangedEvent event){
         publishEvent(event, ORDER_STATUS_UPDATED);
     }

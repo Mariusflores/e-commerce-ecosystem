@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.domain.datatype.OrderStatus;
 import org.example.domain.dto.ProductInfo;
 import org.example.domain.dto.events.OrderPlacedEvent;
+import org.example.domain.dto.events.OrderStatusChangedEvent;
 import org.example.orderservice.client.InventoryClient;
 import org.example.orderservice.dto.OrderItemRequest;
 import org.example.orderservice.dto.OrderRequest;
@@ -128,8 +129,18 @@ public class OrderService {
     public void updateStatus(String orderNumber, OrderStatus status) {
         CustomerOrder order = orderRepository.findByOrderNumber(orderNumber);
 
+        log.info("Updating status ({}) for order: {}", status, order.getOrderNumber());
+
         order.setOrderStatus(status);
         orderRepository.save(order);
+
+        log.info("Updated status for order: {} - publishing event", order.getOrderNumber() );
+        eventPublisher.publishStatusUpdateEvent(
+                OrderStatusChangedEvent.builder()
+                        .orderNumber(order.getOrderNumber())
+                        .orderStatus(order.getOrderStatus())
+                        .build()
+        );
 
     }
 

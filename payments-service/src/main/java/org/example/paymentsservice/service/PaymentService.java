@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.domain.dto.events.OrderPlacedEvent;
 import org.example.domain.dto.events.PaymentCompletedEvent;
 import org.example.domain.dto.events.PaymentFailedEvent;
+import org.example.paymentsservice.error.PaymentProcessingException;
 import org.example.paymentsservice.messaging.PaymentEventPublisher;
 import org.example.paymentsservice.models.Payment;
 import org.example.paymentsservice.repository.PaymentRepository;
@@ -23,11 +24,13 @@ public class PaymentService {
     private final PaymentEventPublisher eventPublisher;
 
     @Transactional
-    public void processPayment(OrderPlacedEvent order) {
+    public void processPayment(OrderPlacedEvent order) throws PaymentProcessingException {
+        log.info("Processing order placed event {}", order);
         PaymentSimulationResult paymentResult = simulator.simulatePayment(
                 order.getTotalAmount(),
                 order.getPaymentMethod()
         );
+        log.info("Payment result {}", paymentResult);
 
         Payment payment = Payment.builder()
                 .orderNumber(order.getOrderNumber())
@@ -39,13 +42,20 @@ public class PaymentService {
                 .failureReason(paymentResult.getFailureReason())
                 .build();
 
-        paymentRepository.save(payment);
+        try {
+            paymentRepository.save(payment);
 
-        // Publish event
-        switch (payment.getPaymentStatus()) {
-            case COMPLETED -> eventPublisher.publishPaymentCompletedEvent(mapToPaymentCompletedEvent(payment));
-            case FAILED -> eventPublisher.publishPaymentFailedEvent(mapToPaymentFailedEvent(payment));
+            // Publish event
+            switch (payment.getPaymentStatus()) {
+                case COMPLETED -> eventPublisher.publishPaymentCompletedEvent(mapToPaymentCompletedEvent(payment));
+                case FAILED -> eventPublisher.publishPaymentFailedEvent(mapToPaymentFailedEvent(payment));
+            }
+
+        } catch (Exception e) {
+            log.error("Error while saving payment {}", payment, e);
+            throw new PaymentProcessingException("Failed to process payment for order: " + order.getOrderNumber(), e);
         }
+
 
     }
 

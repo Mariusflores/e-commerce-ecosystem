@@ -44,9 +44,7 @@ spring:
             - id: user-service
               uri: lb://user-service
               predicates:
-                - Path=/api/auth/**
-                - Path=/api/users/**
-                - Path=/api/addresses/**
+                - Path=/api/auth/**,/api/users/**,/api/addresses/**
 
           globalcors:
             cors-configurations:

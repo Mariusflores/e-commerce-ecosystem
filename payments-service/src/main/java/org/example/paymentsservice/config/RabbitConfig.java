@@ -1,0 +1,37 @@
+package org.example.paymentsservice.config;
+
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class RabbitConfig {
+
+    private static final String ORDER_EXCHANGE_NAME = "order-exchange";
+    private static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
+    private static final String ORDER_QUEUE_NAME = "order-queue";
+
+    @Bean
+    public TopicExchange orderExchange() {
+        return new TopicExchange(ORDER_EXCHANGE_NAME);
+    }
+    @Bean
+    public Queue orderQueue() {
+        return new Queue(ORDER_QUEUE_NAME, true);
+    }
+
+    @Bean
+    public Binding bindingOrder(Queue orderQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(orderQueue).to(orderExchange).with(ORDER_PLACED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Jackson2JsonMessageConverter jackson2JsonMessageConverter() {return new Jackson2JsonMessageConverter();}
+
+
+
+}

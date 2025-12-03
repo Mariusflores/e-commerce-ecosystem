@@ -18,6 +18,7 @@ COPY product-service/pom.xml ./product-service/pom.xml
 COPY order-service/pom.xml ./order-service/pom.xml
 COPY inventory-service/pom.xml ./inventory-service/pom.xml
 COPY user-service/pom.xml ./user-service/pom.xml
+COPY payments-service/pom.xml ./payments-service/pom.xml
 
 # Copy domain source and build it
 COPY domain/src ./domain/src

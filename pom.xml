@@ -33,6 +33,7 @@
         <module>order-service</module>
         <module>inventory-service</module>
         <module>user-service</module>
+        <module>payments-service</module>
         <module>domain</module>
     </modules>
     <packaging>pom</packaging>

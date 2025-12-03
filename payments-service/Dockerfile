@@ -1,4 +1,4 @@
-# Order service Dockerfile
+# Payments service Dockerfile
 
 # Stage 1: Build
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -24,12 +24,12 @@ COPY payments-service/pom.xml ./payments-service/pom.xml
 COPY domain/src ./domain/src
 RUN ./mvnw clean install -pl domain -am -DskipTests
 
-# Download dependencies for order-service (cached layer)
-WORKDIR /workspace/order-service
+# Download dependencies for payments-service (cached layer)
+WORKDIR /workspace/payments-service
 RUN ../mvnw dependency:go-offline -B
 
 # Copy source code
-COPY order-service/src ./src
+COPY payments-service/src ./src
 
 # Build the application
 RUN ../mvnw clean package -DskipTests
@@ -39,10 +39,10 @@ FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
 # Copy the JAR from build stage
-COPY --from=build /workspace/order-service/target/order-service-*.jar ./order-service.jar
+COPY --from=build /workspace/payments-service/target/payments-service-*.jar ./payments-service.jar
 
 # Expose the port
-EXPOSE 8083
+EXPOSE 8085
 
 # Run the Spring Boot JAR
-ENTRYPOINT ["java", "-jar", "order-service.jar"]
+ENTRYPOINT ["java", "-jar", "payments-service.jar"]

@@ -24,6 +24,7 @@ public class UserController {
     @GetMapping("/profile")
     @ResponseStatus(HttpStatus.OK)
     public UserProfileResponse getUserProfile(Authentication authentication) {
+        log.debug(authentication.getPrincipal().toString());
         String email = authentication.getName();
         return userService.getUserProfileByEmail(email);
     }

@@ -125,8 +125,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      rabbitmq:
-        condition: service_started
       consul:
         condition: service_started
 

@@ -1,4 +1,4 @@
-package org.example.userservice.util;
+package org.example.userservice.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

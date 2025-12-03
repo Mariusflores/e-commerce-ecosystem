@@ -2,10 +2,10 @@ package org.example.userservice.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.userservice.dto.AddressRequest;
-import org.example.userservice.dto.UserProfileResponse;
-import org.example.userservice.dto.UserRequest;
-import org.example.userservice.models.Address;
+import org.example.userservice.dto.address.AddressRequest;
+import org.example.userservice.dto.address.AddressResponse;
+import org.example.userservice.dto.user.UserProfileResponse;
+import org.example.userservice.dto.user.UserRequest;
 import org.example.userservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -46,7 +46,7 @@ public class UserController {
 
     @GetMapping("/profile/addresses")
     @ResponseStatus(HttpStatus.OK)
-    public List<Address> getAddresses(Authentication authentication){
+    public List<AddressResponse> getAddresses(Authentication authentication){
         String email = authentication.getName();
 
         return userService.getAddresses(email);

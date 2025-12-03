@@ -1,4 +1,4 @@
-package org.example.userservice.dto;
+package org.example.userservice.dto.address;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +13,6 @@ public class AddressRequest {
 
     private String street;
     private String city;
-    private String state;
+    private String zipCode;
+    private String country;
 }

@@ -1,7 +1,7 @@
 package org.example.userservice.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.userservice.dto.AddressRequest;
+import org.example.userservice.dto.address.AddressRequest;
 import org.example.userservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;

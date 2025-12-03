@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.userservice.dto.LoginRequest;
-import org.example.userservice.dto.UserRequest;
+import org.example.userservice.dto.user.UserRequest;
 import org.example.userservice.models.Role;
 import org.example.userservice.models.User;
 import org.example.userservice.repository.UserRepository;

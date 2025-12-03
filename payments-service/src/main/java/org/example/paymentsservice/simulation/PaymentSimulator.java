@@ -35,7 +35,6 @@ public class PaymentSimulator {
                 .failureReason(status ==
                         PaymentStatus.FAILED ? simulateFailureReason() : null
                 )
-                .processedAt(LocalDateTime.now())
                 .build();
 
     }

@@ -12,6 +12,7 @@ import org.example.productservice.dto.ProductResponse;
 import org.example.productservice.model.Product;
 import org.example.productservice.repository.ProductRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -29,6 +30,7 @@ public class ProductService {
      * Saves Product to DB
      * publishes a creation event via ProductEventPublisher
      * */
+    @Transactional
     public String createProduct(ProductRequest request){
         Product product = Product.builder()
                 .name(request.getName())
@@ -78,6 +80,7 @@ public class ProductService {
      * Fields in ProductRequest that are null or equal to the existing values are ignored.
      * Throws custom ProductNotFoundException if the product is not found
      * */
+    @Transactional
     public void updateProduct(String id, ProductRequest request){
         Product product = repository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " not found"));
@@ -104,6 +107,7 @@ public class ProductService {
      * Deletes a product document by ID and publishes deletion event via ProductEventPublisher
      * Throws custom ProductNotFoundException if the product is not found.
      * */
+    @Transactional
     public void deleteProductById(String id){
         Product product = repository.findById(id).
                 orElseThrow(() -> new ProductNotFoundException("Product with id: " + id + " not found"));

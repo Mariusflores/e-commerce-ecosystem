@@ -126,6 +126,7 @@ public class OrderService {
         return orders.stream().map(this::mapToOrderResponse).toList();
     }
 
+    @Transactional
     public void updateStatus(String orderNumber, OrderStatus status) {
         CustomerOrder order = orderRepository.findByOrderNumber(orderNumber);
 
@@ -144,7 +145,7 @@ public class OrderService {
 
     }
 
-
+    @Transactional
     public void deleteOrder(String orderNumber) {
         orderRepository.delete(orderRepository.findByOrderNumber(orderNumber));
     }

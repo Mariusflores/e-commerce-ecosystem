@@ -13,6 +13,7 @@ import org.example.inventoryservice.error.OutOfStockException;
 import org.example.inventoryservice.model.StockItem;
 import org.example.inventoryservice.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +26,7 @@ public class InventoryService {
     private final ProductClient productClient;
     private final InventoryRepository inventoryRepository;
 
-
+    @Transactional
     public void addOrUpdateInventoryItem(StockItemRequest stockItemRequest){
         StockItem stockItem = StockItem.builder()
                 .skuCode(stockItemRequest.getSkuCode())
@@ -45,6 +46,7 @@ public class InventoryService {
     }
 
     //API context (for controller)
+    @Transactional
     public int reduceInventoryItem(String skuCode) {
         StockItem verifiedItem = verifyItemExists(skuCode);
 
@@ -58,7 +60,7 @@ public class InventoryService {
     }
 
     //Event context (for EventListener
-
+    @Transactional
     public void handleInventoryEvent(InventoryEvent event){
 
         switch(event.getAction()){
@@ -88,7 +90,7 @@ public class InventoryService {
 
     }
 
-    public void handleReduceInventoryEvent(String skuCode, int quantity) {
+    private void handleReduceInventoryEvent(String skuCode, int quantity) {
         StockItem verifiedItem = verifyItemExists(skuCode);
 
         if(verifiedItem.getAvailableStock() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");
@@ -100,7 +102,7 @@ public class InventoryService {
         log.info("Item {} has been reduced by {}", savedItem.getSkuCode(), quantity);
     }
 
-    public void handleAddInventoryEvent(String skuCode, int quantity) {
+    private void handleAddInventoryEvent(String skuCode, int quantity) {
         StockItem verifiedItem = verifyItemExists(skuCode);
 
         if(verifiedItem.getAvailableStock() <= 0) throw new OutOfStockException("Item " + skuCode + " is out of stock");

@@ -20,7 +20,7 @@ public class OrderPlacedEvent {
     private String orderNumber;
 
     // Customer information
-    private String customerId;
+    private Long customerId;
     //TODO private String customerEmail once user service is up
 
     // Order details

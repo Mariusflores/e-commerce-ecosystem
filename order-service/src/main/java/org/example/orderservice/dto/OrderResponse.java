@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @Builder
 public class OrderResponse {
 
-    Long id;
-    String customerId;
-    String orderNumber;
-    LocalDateTime orderDate;
-    OrderStatus orderStatus;
-    BigDecimal total;
+    private Long id;
+    private Long customerId;
+    private String orderNumber;
+    private LocalDateTime orderDate;
+    private OrderStatus orderStatus;
+    private BigDecimal total;
     private String shippingAddress;
 
 

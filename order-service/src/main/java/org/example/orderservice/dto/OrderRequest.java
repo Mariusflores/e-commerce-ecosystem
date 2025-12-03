@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 public class OrderRequest {
 
-    private String customerId;
+    private Long customerId;
     private String paymentMethod;
     private String shippingAddress;
     private List<OrderItemRequest> items;

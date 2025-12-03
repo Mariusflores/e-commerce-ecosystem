@@ -28,7 +28,7 @@ public class CustomerOrder {
     private Long id;
 
     @Column(nullable = false, updatable = false)
-    private String customerId;
+    private Long customerId;
 
     @Builder.Default
     @Column(unique = true, nullable = false)
@@ -39,7 +39,7 @@ public class CustomerOrder {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus = OrderStatus.CREATED;
+    private OrderStatus orderStatus = OrderStatus.PENDING;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> items = new ArrayList<>();

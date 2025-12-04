@@ -15,7 +15,22 @@ public class RabbitConfig {
     private static final String ORDER_EXCHANGE_NAME = "order-exchange";
     private static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
     private static final String ORDER_QUEUE_NAME = "order-queue";
+    private static final String PAYMENTS_EXCHANGE_NAME = "payments-exchange";
 
+    /**
+     * Publisher Beans
+     *
+     */
+
+    @Bean
+    public TopicExchange paymentsExchange() {
+        return new TopicExchange(PAYMENTS_EXCHANGE_NAME);
+    }
+
+    /**
+     * Consumer Beans
+     *
+     */
     @Bean
     public TopicExchange orderExchange() {
         return new TopicExchange(ORDER_EXCHANGE_NAME);

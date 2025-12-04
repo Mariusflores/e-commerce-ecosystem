@@ -17,9 +17,24 @@ public class RabbitConfig {
     private static final String PAYMENT_FAILED_ROUTING_KEY = "payment.failed";
     private static final String PAYMENT_COMPLETED_QUEUE_NAME = "payment-completed-queue";
     private static final String PAYMENT_FAILED_QUEUE_NAME = "payment-failed-queue";
+    private static final String ORDER_EXCHANGE_NAME = "order-exchange";
+
+    /**
+     * Publisher Beans
+     *
+     */
 
     @Bean
     public TopicExchange orderExchange() {
+        return new TopicExchange(ORDER_EXCHANGE_NAME);
+    }
+
+    /**
+     * Consumer Beans
+     *
+     */
+    @Bean
+    public TopicExchange paymentExchange() {
         return new TopicExchange(PAYMENT_EXCHANGE_NAME);
     }
 

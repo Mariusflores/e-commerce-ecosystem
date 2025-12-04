@@ -3,8 +3,8 @@ package org.example.inventoryservice.messaging;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.datatype.Action;
-import org.example.domain.dto.events.OrderPlacedEvent;
 import org.example.domain.dto.events.InventoryEvent;
+import org.example.domain.dto.events.OrderPlacedEvent;
 import org.example.inventoryservice.services.InventoryService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -20,9 +20,10 @@ public class InventoryEventListener {
     /**
      * Listens to the 'inventory-queue' for inventory events
      * and delegates them to InventoryService for handling.
-     * */
+     *
+     */
     @RabbitListener(queues = "product-queue")
-    public void handleInventoryEvent(@Payload InventoryEvent event){
+    public void handleInventoryEvent(@Payload InventoryEvent event) {
         log.info("Processing Event: {} - For item {}",
                 event.getAction(),
                 event.getSkuCode()
@@ -30,8 +31,8 @@ public class InventoryEventListener {
         handleEvent(event);
     }
 
-    @RabbitListener (queues = "order-queue")
-    public void handleOrderPlacedEvent(@Payload OrderPlacedEvent event){
+    @RabbitListener(queues = "inventory-order-queue")
+    public void handleOrderPlacedEvent(@Payload OrderPlacedEvent event) {
         log.info("Processing order: {} - reducing stock for {} items",
                 event.getOrderNumber(),
                 event.getItems().size()
@@ -47,8 +48,9 @@ public class InventoryEventListener {
             handleEvent(inventoryEvent);
         }
     }
+    // TODO add back stock if order failed/cancelled
 
-    public void handleEvent(InventoryEvent event){
+    public void handleEvent(InventoryEvent event) {
         inventoryService.handleInventoryEvent(event);
     }
 }

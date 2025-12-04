@@ -14,7 +14,7 @@ public class RabbitConfig {
 
     private static final String ORDER_EXCHANGE_NAME = "order-exchange";
     private static final String ORDER_PLACED_ROUTING_KEY = "order.placed";
-    private static final String ORDER_QUEUE_NAME = "order-queue";
+    private static final String PAYMENTS_ORDER_QUEUE = "payment-order-queue";
     private static final String PAYMENTS_EXCHANGE_NAME = "payments-exchange";
 
     /**
@@ -37,13 +37,13 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue orderQueue() {
-        return new Queue(ORDER_QUEUE_NAME, true);
+    public Queue paymentsOrderQueue() {
+        return new Queue(PAYMENTS_ORDER_QUEUE, true);
     }
 
     @Bean
-    public Binding bindingOrder(Queue orderQueue, TopicExchange orderExchange) {
-        return BindingBuilder.bind(orderQueue).to(orderExchange).with(ORDER_PLACED_ROUTING_KEY);
+    public Binding bindingOrder(Queue paymentsOrderQueue, TopicExchange orderExchange) {
+        return BindingBuilder.bind(paymentsOrderQueue).to(orderExchange).with(ORDER_PLACED_ROUTING_KEY);
     }
 
     @Bean

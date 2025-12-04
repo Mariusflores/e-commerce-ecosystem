@@ -14,7 +14,7 @@ public class PaymentEventListener {
 
     private final PaymentService paymentService;
 
-    @RabbitListener(queues = "order_queue")
+    @RabbitListener(queues = "order-queue")
     public void processPayment(OrderPlacedEvent order) {
         log.info("Received order placed event: {}", order);
 

@@ -46,12 +46,12 @@ public class OrderService {
         // Fetch Details from Inventory Service
         List<ProductInfo> products;
 
-        try{
+        try {
             products = inventoryClient.getItemsBySkuCodes(skuCodes);
-        }catch (FeignException.NotFound e){
+        } catch (FeignException.NotFound e) {
             log.error("One or more products not found in inventory");
             throw new RuntimeException("Product not found");
-        }catch (FeignException e){
+        } catch (FeignException e) {
             log.error("Error communicating with inventory", e);
             throw new RuntimeException("Error communicating with inventory");
         }
@@ -61,19 +61,19 @@ public class OrderService {
                 .collect(Collectors.toMap(ProductInfo::getSkuCode, product -> product));
 
         //Validate and build order items
-        List<OrderItem>  orderItems = new ArrayList<>();
+        List<OrderItem> orderItems = new ArrayList<>();
 
-        for(OrderItemRequest itemRequest : request.getItems()){
-            ProductInfo product =  productInfoMap.get(itemRequest.getSkuCode());
+        for (OrderItemRequest itemRequest : request.getItems()) {
+            ProductInfo product = productInfoMap.get(itemRequest.getSkuCode());
 
 
-            if(product == null){
+            if (product == null) {
                 throw new RuntimeException("Product not found: " + itemRequest.getSkuCode());
             }
 
             //validate stock availability
 
-            if(product.getQuantity() < itemRequest.getQuantity()){
+            if (product.getQuantity() < itemRequest.getQuantity()) {
                 throw new RuntimeException("Insufficient stock for product: " + product.getName());
             }
 
@@ -104,11 +104,6 @@ public class OrderService {
         CustomerOrder savedOrder = orderRepository.save(order);
         log.info("Saved Order for customer: {}", savedOrder.getCustomerId());
 
-        /*
-        * TODO (Publish Event to Payments)
-        *  Requires Payments Service
-        * */
-
         OrderPlacedEvent event = mapToOrderPlacedEvent(savedOrder);
         eventPublisher.publishOrderPlacedEvent(event);
 
@@ -120,7 +115,7 @@ public class OrderService {
         return mapToOrderResponse(order);
     }
 
-    public List<OrderResponse> fetchByCustomerId(String customerId) {
+    public List<OrderResponse> fetchByCustomerId(Long customerId) {
 
         List<CustomerOrder> orders = orderRepository.getAllByCustomerId(customerId);
         return orders.stream().map(this::mapToOrderResponse).toList();
@@ -130,12 +125,13 @@ public class OrderService {
     public void updateStatus(String orderNumber, OrderStatus status) {
         CustomerOrder order = orderRepository.findByOrderNumber(orderNumber);
 
+
         log.info("Updating status ({}) for order: {}", status, order.getOrderNumber());
 
         order.setOrderStatus(status);
         orderRepository.save(order);
 
-        log.info("Updated status for order: {} - publishing event", order.getOrderNumber() );
+        log.info("Updated status for order: {} - publishing event", order.getOrderNumber());
         eventPublisher.publishStatusUpdateEvent(
                 OrderStatusChangedEvent.builder()
                         .orderNumber(order.getOrderNumber())
@@ -152,7 +148,8 @@ public class OrderService {
 
     /**
      * Helper Functions
-     * */
+     *
+     */
 
     private OrderResponse mapToOrderResponse(CustomerOrder customerOrder) {
         return OrderResponse.builder()

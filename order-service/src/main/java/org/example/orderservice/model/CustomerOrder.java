@@ -39,6 +39,7 @@ public class CustomerOrder {
 
     @Builder.Default
     @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", length = 50)
     private OrderStatus orderStatus = OrderStatus.PENDING;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -49,8 +50,7 @@ public class CustomerOrder {
     private String shippingAddress;
 
 
-
-    public BigDecimal getTotal(){
+    public BigDecimal getTotal() {
         return items.stream()
                 .map(i -> i.getPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.domain.dto.events.OrderPlacedEvent;
 import org.example.domain.dto.events.PaymentCompletedEvent;
 import org.example.domain.dto.events.PaymentFailedEvent;
+import org.example.paymentsservice.dto.PaymentResponse;
 import org.example.paymentsservice.error.PaymentProcessingException;
 import org.example.paymentsservice.messaging.PaymentEventPublisher;
 import org.example.paymentsservice.models.Payment;
@@ -13,6 +14,8 @@ import org.example.paymentsservice.repository.PaymentRepository;
 import org.example.paymentsservice.simulation.PaymentSimulationResult;
 import org.example.paymentsservice.simulation.PaymentSimulator;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +58,29 @@ public class PaymentService {
             log.error("Error while saving payment {}", payment, e);
             throw new PaymentProcessingException("Failed to process payment for order: " + order.getOrderNumber(), e);
         }
+    }
 
+    public List<PaymentResponse> getPaymentByOrderNumber(String orderNumber) {
+        List<Payment> payments = paymentRepository.findAllByOrderNumber(orderNumber);
+        return payments.stream().map(this::mapToPaymentResponse).toList();
+    }
 
+    public List<PaymentResponse> getPaymentByCustomerId(Long customerId) {
+        List<Payment> payments = paymentRepository.findAllByCustomerId(customerId);
+        return payments.stream().map(this::mapToPaymentResponse).toList();
+    }
+
+    private PaymentResponse mapToPaymentResponse(Payment payment) {
+        return PaymentResponse.builder()
+                .orderNumber(payment.getOrderNumber())
+                .customerId(payment.getCustomerId())
+                .amount(payment.getAmount())
+                .paymentDate(payment.getCreatedDate())
+                .paymentStatus(payment.getPaymentStatus())
+                .paymentMethod(payment.getPaymentMethod())
+                .transactionId(payment.getTransactionId())
+                .failureReason(payment.getFailureReason())
+                .build();
     }
 
     private PaymentFailedEvent mapToPaymentFailedEvent(Payment payment) {
@@ -80,4 +104,6 @@ public class PaymentService {
                 .completedAt(payment.getCreatedDate())
                 .build();
     }
+
+
 }

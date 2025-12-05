@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity for Inventory database
+ * */
 @Entity
 @Table(name = "t_inventory")
 @Data
@@ -21,5 +24,5 @@ public class StockItem {
     @NotNull
     @Column(unique = true)
     private String skuCode;
-    private int quantity;
+    private int availableStock;
 }

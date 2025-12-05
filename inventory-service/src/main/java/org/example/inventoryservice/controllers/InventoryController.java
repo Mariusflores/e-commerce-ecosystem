@@ -1,11 +1,14 @@
 package org.example.inventoryservice.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.example.domain.dto.ProductInfo;
 import org.example.inventoryservice.dto.StockItemRequest;
 import org.example.inventoryservice.dto.StockItemResponse;
 import org.example.inventoryservice.services.InventoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
@@ -20,6 +23,11 @@ public class InventoryController {
         return inventoryService.getItemBySkuCode(skuCode);
     }
 
+    @GetMapping("/batch")
+    public List<ProductInfo> getItemsBySkuCodes(@RequestParam List<String> skuCodes) {
+        return inventoryService.getItemsBySkuCode(skuCodes);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addOrUpdateInventoryItem(@RequestBody StockItemRequest request){
@@ -31,4 +39,5 @@ public class InventoryController {
     public int reduceInventoryItem(@PathVariable String skuCode){
         return inventoryService.reduceInventoryItem(skuCode);
     }
+
 }

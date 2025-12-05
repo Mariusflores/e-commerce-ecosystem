@@ -2,6 +2,7 @@ package org.example.productservice.controllers;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.domain.dto.ProductInfo;
 import org.example.productservice.dto.ProductRequest;
 import org.example.productservice.dto.ProductResponse;
 import org.example.productservice.service.ProductService;
@@ -28,6 +29,12 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public ProductResponse getProductById(@PathVariable String id){
         return productService.getProductById(id);
+    }
+
+    @GetMapping("/batch")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductInfo> getProductsBySkuCodes(@RequestParam List<String> skuCodes){
+        return productService.getProductsBySkuCodes(skuCodes);
     }
 
     @PostMapping

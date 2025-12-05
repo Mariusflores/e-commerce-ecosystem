@@ -18,14 +18,11 @@ public class PaymentsController {
     private final PaymentService paymentService;
 
     @GetMapping("/{orderNumber}")
-    // TODO Implement logic
     public List<PaymentResponse> getByOrderNumber(@PathVariable String orderNumber) {
-
         return paymentService.getPaymentByOrderNumber(orderNumber);
     }
 
-    @GetMapping("/{customerId}")
-    // TODO implement logic
+    @GetMapping("/customer/{customerId}")
     public List<PaymentResponse> getByCustomerId(@PathVariable Long customerId) {
         return paymentService.getPaymentByCustomerId(customerId);
 

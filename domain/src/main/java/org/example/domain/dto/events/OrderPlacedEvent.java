@@ -21,7 +21,6 @@ public class OrderPlacedEvent {
 
     // Customer information
     private Long customerId;
-    //TODO private String customerEmail once user service is up
 
     // Order details
     private BigDecimal totalAmount;

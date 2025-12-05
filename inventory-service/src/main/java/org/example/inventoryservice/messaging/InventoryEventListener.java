@@ -48,7 +48,6 @@ public class InventoryEventListener {
             handleEvent(inventoryEvent);
         }
     }
-    // TODO add back stock if order failed/cancelled
 
     public void handleEvent(InventoryEvent event) {
         inventoryService.handleInventoryEvent(event);
